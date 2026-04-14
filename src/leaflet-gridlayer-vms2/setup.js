@@ -31,7 +31,10 @@ const setupMethods = {
 
     this.tileSize = this.getTileSize().x
 
-    this.options.tileUrl += '&key=' + this.options.accessKey
+    if (this.options.accessKey && !this.options.tileUrl.includes('key=')) {
+      const separator = this.options.tileUrl.includes('?') ? '&' : '?'
+      this.options.tileUrl += separator + 'key=' + this.options.accessKey
+    }
     this.options.zoomStep = Math.log2(this.options.zoomPowerBase)
 
     this.printFormatMaskDiv = document.createElement('div')

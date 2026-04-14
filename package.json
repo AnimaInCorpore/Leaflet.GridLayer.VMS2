@@ -11,8 +11,8 @@
     "cypress-test-no-real-data": "start-server-and-test start-dev-server http://localhost:9876 cy:run:no-real-data",
     "cypress-test-real-data": "start-server-and-test start-dev-server http://localhost:9876 cy:run:real-data",
     "cypress-test": "start-server-and-test start-dev-server http://localhost:9876 cy:run",
-    "lint:js": "eslint src/*.js",
-    "lint:standardjs": "npx standard src/Leaflet.GridLayer.VMS2.js src/LocrMapCustomElement.js src/MapOverlay.js src/PrintFormat.js src/unicode.js",
+    "lint:js": "eslint src/Leaflet.GridLayer.VMS2.js src/LocrMapCustomElement.js src/MapOverlay.js src/PrintFormat.js src/unicode.js \"src/leaflet-gridlayer-vms2/**/*.js\"",
+    "lint:standardjs": "npx standard src/Leaflet.GridLayer.VMS2.js src/LocrMapCustomElement.js src/MapOverlay.js src/PrintFormat.js src/unicode.js \"src/leaflet-gridlayer-vms2/**/*.js\"",
     "start-dev-server": "node dev-server.mjs",
     "test": "mocha"
   },

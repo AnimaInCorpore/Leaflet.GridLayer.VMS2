@@ -1,6 +1,7 @@
 /* global Worker */
 
 import { DEFAULT_MIN_NUMBER_OF_WORKERS } from './constants.js'
+import { unpackPackedTileObjects } from './packed-tile-objects.js'
 
 function createVms2Context () {
   return {
@@ -38,9 +39,10 @@ function handleDecodeWorkerMessage (event) {
     }
 
     const tileKey = tileData.x + '|' + tileData.y + '|' + tileData.z + '|' + tileData.dZ
+    const objects = tileData.tOs ?? unpackPackedTileObjects(tileData.packedTileObjects)
 
     layerMap.set(tileKey, {
-      objects: tileData.tOs,
+      objects,
       x: tileData.x,
       y: tileData.y,
       z: tileData.z,

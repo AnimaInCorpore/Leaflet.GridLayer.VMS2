@@ -403,23 +403,27 @@ const resourceLoaderMethods = {
         fetch(new URL(tileUrl, window.location.origin), { signal: tileLayerData.tileCanvas.abortController.signal })
           .then(response => {
             if (!response.ok) {
-              throw new Error({
-                code: response.status,
-                message: response.statusText,
-                response
-              })
+              console.warn('Tile request failed', response.status, response.statusText, tileUrl)
+              resolve()
+              return null
             }
 
             this.numberOfRequestedTiles++
 
             return response.arrayBuffer()
           })
-          .then(processRawData)
+          .then(rawData => {
+            if (!rawData) {
+              return
+            }
+            processRawData(rawData)
+          })
           .catch(error => {
             if (error.code === 20 || error.name === 'AbortError') {
               resolve()
             } else {
-              throw error
+              console.warn('Tile request error', error, tileUrl)
+              resolve()
             }
           })
       }
