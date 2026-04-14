@@ -49,6 +49,17 @@ function compileTileWorkerQueue (layer, resolve) {
   }
 }
 
+function createPatternDescriptor (patternImage, repetition) {
+  return {
+    patternImage,
+    repetition,
+    transformMatrix: null,
+    setTransform (matrix) {
+      this.transformMatrix = matrix
+    }
+  }
+}
+
 const resourceLoaderMethods = {
   _requestStyle: function () {
     return new Promise((resolve, reject) => {
@@ -440,8 +451,23 @@ const resourceLoaderMethods = {
 
       const patternImage = await this._requestImage(patternUrl)
 
-      globalThis.vms2Context.patternCache[patternName] = context.createPattern(patternImage, 'repeat')
-      globalThis.vms2Context.patternCache[patternName].patternImage = patternImage
+      const pattern = typeof context.createPattern === 'function'
+        ? context.createPattern(patternImage, 'repeat')
+        : createPatternDescriptor(patternImage, 'repeat')
+
+      pattern.patternImage = patternImage
+
+      if (typeof pattern.setTransform !== 'function') {
+        pattern.setTransform = function (matrix) {
+          this.transformMatrix = matrix
+        }
+      }
+
+      if (typeof pattern.transformMatrix === 'undefined') {
+        pattern.transformMatrix = null
+      }
+
+      globalThis.vms2Context.patternCache[patternName] = pattern
     }
 
     return globalThis.vms2Context.patternCache[patternName]
