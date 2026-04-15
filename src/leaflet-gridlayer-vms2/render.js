@@ -8,6 +8,8 @@ import {
 } from './constants.js'
 import { getLayerStyleType, shouldProcessLayer } from './layer-data.js'
 
+const IDENTITY = new DOMMatrix()
+
 function buildMergedMapStyle (style, styleOverride) {
   if (!styleOverride) {
     return style
@@ -449,13 +451,9 @@ const renderMethods = {
         drawingInfo.boundingArea = layer.needsAreaExtension ? drawingInfo.extendedMapArea : drawingInfo.mapArea
 
         drawingInfo.context.beginGroup(layerName)
-        drawingInfo.context.setTransform(new DOMMatrix())
+        drawingInfo.context.setTransform(IDENTITY)
         drawingInfo.context.globalCompositeOperation = layer.CompositeOperation || 'source-over'
         drawingInfo.context.filter = layer.CanvasFilter || 'none'
-        drawingInfo.context.fillStyle = '#00000000'
-        drawingInfo.context.strokeStyle = '#00000000'
-        drawingInfo.context.lineWidth = 0
-        drawingInfo.context.setLineDash([])
         drawingInfo.context.textAlign = 'center'
         drawingInfo.context.textBaseline = 'middle'
         drawingInfo.tileBoundingBox = null
@@ -487,7 +485,7 @@ const renderMethods = {
     drawingInfo.context = drawingInfo.mapCanvas.context
 
     drawingInfo.context.beginGroup('background')
-    drawingInfo.context.setTransform(new DOMMatrix())
+    drawingInfo.context.setTransform(IDENTITY)
     drawingInfo.context.globalCompositeOperation = 'destination-over'
 
     if (this.options.type !== 'text') {

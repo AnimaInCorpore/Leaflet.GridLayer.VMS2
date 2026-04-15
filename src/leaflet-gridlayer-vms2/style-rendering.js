@@ -22,6 +22,19 @@ function ensureCompiledObjectDataFunction (objectStyle, propertyName) {
   return objectStyle?.[propertyName]
 }
 
+function ensureCompiledFilterConditions (layerStyle) {
+  if (!Array.isArray(layerStyle?.Filters) || layerStyle._compiledFilterConditions === layerStyle.Filters) {
+    return
+  }
+
+  // Compile filter predicates once per layer so the object loop only invokes them.
+  for (const filter of layerStyle.Filters) {
+    ensureCompiledObjectDataFunction(filter, 'Condition')
+  }
+
+  layerStyle._compiledFilterConditions = layerStyle.Filters
+}
+
 function ensureMapObjectType (mapObject) {
   if (!mapObject.type) {
     if (typeof mapObject.info.length === 'number') {
@@ -202,7 +215,7 @@ function resolveObjectStyle (layer, drawingInfo, tileInfo, layerStyle, mapObject
         continue
       }
 
-      const condition = ensureCompiledObjectDataFunction(filter, 'Condition')
+      const condition = filter.Condition
 
       if (typeof condition === 'function' && condition(objectData, tileInfo.vms2TileZ, layer.randomGenerator)) {
         objectStyle = filter.Style
@@ -345,6 +358,8 @@ const styleRenderingMethods = {
 
     let activeObjectStyle = null
 
+    ensureCompiledFilterConditions(layer)
+
     for (const mapObject of mapObjects) {
       if (!mapObject) {
         continue
@@ -401,6 +416,8 @@ const styleRenderingMethods = {
 
   _drawObjectsLayer: async function (drawingInfo, mapObjects, tileInfo, layer) {
     let activeObjectStyle = null
+
+    ensureCompiledFilterConditions(layer)
 
     for (const mapObject of mapObjects) {
       if (!mapObject) {

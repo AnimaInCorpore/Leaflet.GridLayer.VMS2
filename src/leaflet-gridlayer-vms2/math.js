@@ -4,6 +4,8 @@ import {
   EARTH_EQUATORIAL_RADIUS_METERS
 } from './constants.js'
 
+const HEX = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'))
+
 const mathMethods = {
   _latitudeToMeters: function (latitude) {
     return Math.log(Math.tan((90 + latitude) * Math.PI / 360)) * EARTH_EQUATORIAL_RADIUS_METERS
@@ -54,19 +56,19 @@ const mathMethods = {
   },
 
   _hexify8: function (value) {
-    return ('00' + value.toString(16)).slice(-2)
+    return HEX[value & 255]
   },
 
   _hexify16: function (values) {
-    return ('0000' + ((values[0] << 8) + values[1]).toString(16)).slice(-4)
+    return HEX[values[0] & 255] + HEX[values[1] & 255]
   },
 
   _hexify24: function (values) {
-    return ('000000' + ((values[0] << 16) + (values[1] << 8) + values[2]).toString(16)).slice(-6)
+    return HEX[values[0] & 255] + HEX[values[1] & 255] + HEX[values[2] & 255]
   },
 
   _hexify32: function (values) {
-    return this._hexify24(values) + this._hexify8(values[3])
+    return HEX[values[0] & 255] + HEX[values[1] & 255] + HEX[values[2] & 255] + HEX[values[3] & 255]
   },
 
   _getWorkerURL: function (url) {
